@@ -25,7 +25,7 @@
     <version.plugin.jar>2.4</version.plugin.jar>
     <version.plugin.source>2.2.1</version.plugin.source>
     <version.plugin.eclipse>2.9</version.plugin.eclipse>
-    <version.plugin.assembly>2.4</version.plugin.assembly>
+    <version.plugin.assembly>2.5.3</version.plugin.assembly>
     <version.plugin.failsafe>2.17</version.plugin.failsafe>
     <version.plugin.surefire>2.17</version.plugin.surefire>
     <version.plugin.shade>2.3</version.plugin.shade>
@@ -235,14 +235,28 @@ of a fixed location is recommended. -->
             </executions>
         </plugin>
 
-	  <!-- Permite configurar el proyecto en eclipse -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>${version.plugin.eclipse}</version>
-        <configuration>
-          <downloadSources>true</downloadSources>
-        </configuration>
-      </plugin>
+        <!-- Empaqueta en un zip -->
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>${version.plugin.assembly}</version>
+            <executions>
+                <execution>
+                    <id>generate-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <configuration>
+                <descriptors>
+                    <descriptor>src/assembly/descriptor.xml</descriptor>
+                </descriptors>
+                <finalName>${project.artifactId}</finalName>
+                <appendAssemblyId>false</appendAssemblyId>
+                <outputDirectory>target</outputDirectory>
+            </configuration>
+        </plugin>
 
     </plugins>
   </build>
