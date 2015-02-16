@@ -29,6 +29,7 @@
     <version.plugin.failsafe>2.17</version.plugin.failsafe>
     <version.plugin.surefire>2.17</version.plugin.surefire>
     <version.plugin.shade>2.3</version.plugin.shade>
+    <version.plugin.dependency>2.10</version.plugin.dependency>
     <version.jacoco>0.7.1.201405082137</version.jacoco>
 
     
@@ -127,9 +128,22 @@ of a fixed location is recommended. -->
             </executions>
         </plugin>
 
-      
-	  
-	  <!-- Los empaqueta en jars -->
+        <!-- Attachea los fuentes como jar -->
+        <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>${version.plugin.source}</version>
+            <executions>
+                <execution>
+                    <id>attach-source</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>jar-no-fork</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+
+        <!-- Los empaqueta en jars -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${version.plugin.jar}</version>
@@ -192,22 +206,35 @@ of a fixed location is recommended. -->
                 </execution>
             </executions>
         </plugin>
+        
+      <!-- Descomprime el contenedor ejecutable -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>${version.plugin.dependency}</version>
+            <executions>
+                <execution>
+                    <id>copy-dependency</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>unpack</goal>
+                    </goals>
+                    <configuration>
+                        <artifactItems>
+                            <artifactItem>
+                                <groupId>ar.com.kfgodel</groupId>
+                                <artifactId>executable-container</artifactId>
+                                <version>0.1-SNAPSHOT</version>
+                                <type>zip</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>target/unpacked</outputDirectory>
+                            </artifactItem>
+                        </artifactItems>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 
-        <!-- Attachea los fuentes como jar -->
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>${version.plugin.source}</version>
-        <executions>
-          <execution>
-            <id>attach-source</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-	  
 	  <!-- Permite configurar el proyecto en eclipse -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
