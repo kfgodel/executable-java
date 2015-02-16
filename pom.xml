@@ -62,6 +62,8 @@ of a fixed location is recommended. -->
 
   
   <build>
+      
+      
     <plugins>
 	
 		<!-- Genera los binarios -->
@@ -132,10 +134,12 @@ of a fixed location is recommended. -->
         <artifactId>maven-jar-plugin</artifactId>
         <version>${version.plugin.jar}</version>
         <configuration>
+          <!-- Needed to match container expected jar file -->
+          <finalName>executable-app</finalName>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>executablejava.ExecutableMain</mainClass>
+              <mainClass>ar.com.kfgodel.executablejava.ExecutableMain</mainClass>
             </manifest>
               <manifestEntries>
                 <Build-JVM>${java.vm.name} - ${java.vm.vendor}</Build-JVM>
@@ -275,13 +279,11 @@ of a fixed location is recommended. -->
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>${version.logback}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${version.logback}</version>
-      <scope>test</scope>
     </dependency>
     
     <!-- Testing -->

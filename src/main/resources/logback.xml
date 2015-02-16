@@ -16,7 +16,7 @@
 		</encoder>
 	</appender>
   
-	<logger name="ar.com.kfgodel.executable-java" level="DEBUG" />
+	<logger name="ar.com.kfgodel.executablejava" level="DEBUG" />
 	
 	<root level="info">
 	  <appender-ref ref="STDOUT" />
