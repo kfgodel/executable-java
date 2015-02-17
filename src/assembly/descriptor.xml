@@ -16,7 +16,7 @@
             <directory>target/unpacked</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>**/*.*</include>
+                <include>**/*</include>
             </includes>
             <excludes>
                 <exclude>app/executable-app.jar</exclude>

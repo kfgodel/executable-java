@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ar.com.kfgodel</groupId>
-  <artifactId>excutable-java</artifactId>
+  <artifactId>executable-java</artifactId>
   <version>0.1-SNAPSHOT</version>
   <name>ExecutableJava</name>
-  <description>Simplified binary executable adapter to run java programs</description>
+  <description>Example project that uses a binary container to be executable on different platforms</description>
   
   
   <scm>
@@ -24,40 +24,12 @@
     <version.plugin.compiler>3.1</version.plugin.compiler>
     <version.plugin.jar>2.4</version.plugin.jar>
     <version.plugin.source>2.2.1</version.plugin.source>
-    <version.plugin.eclipse>2.9</version.plugin.eclipse>
     <version.plugin.assembly>2.5.3</version.plugin.assembly>
-    <version.plugin.failsafe>2.17</version.plugin.failsafe>
-    <version.plugin.surefire>2.17</version.plugin.surefire>
     <version.plugin.shade>2.3</version.plugin.shade>
     <version.plugin.dependency>2.10</version.plugin.dependency>
-    <version.jacoco>0.7.1.201405082137</version.jacoco>
 
-    
     <version.slf4j>1.7.6</version.slf4j>
     <version.logback>1.1.1</version.logback>
-    <version.junit>4.11</version.junit>
-    <version.testng>6.8.8</version.testng>
-    <version.assertj>1.6.1</version.assertj>
-    <version.mockito>1.9.5</version.mockito>
-    <version.javaspec>2.0</version.javaspec>
-    <version.mirror>1.6.1</version.mirror>
-
-      <!-- Location of the JaCoCo output file created by the agent execution during ITs. We want
-all modules to dump their coverage information into a single file for Sonar to pick up.
-Sonar is only going to look for one file so we put the file in target folder of the root of the
-project when running a top-down build. session.executionRootDirectory points there if
-we run Maven in the top level folder of the project.
-If you don't do it this way, you have to define an absolute path to a fixed location
-on the server or you have to put a relative path in every child module defining where JaCoCo is
-to place its output file. The last solution is error prone so the solution shown here or the use
-of a fixed location is recommended. -->
-      <jacoco.out.path>${session.executionRootDirectory}/target</jacoco.out.path>
-      <jacoco.out.file>jacoco.exec</jacoco.out.file>
-      <!-- Location of the JaCoCo IT output file for use on Jenkins. See jacoco.out.path. NOTE: Can't use
-      ${session.executionRootDirectory} here because of http://jira.codehaus.org/browse/SONAR-3427.
-      env.WORKSPACE is set by Jenkins, which is really the only time sonar:sonar is going to be run in
-      most cases. -->
-      <sonar.jacoco.itReportPath>${env.WORKSPACE}/target/${jacoco.out.file}</sonar.jacoco.itReportPath>
 
   </properties>
 
@@ -80,54 +52,6 @@ of a fixed location is recommended. -->
         </configuration>
       </plugin>
       
-      <!-- Corre los tests unitarios *Test -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${version.plugin.surefire}</version>
-          <configuration>
-              <!-- Adds the line argument to dump jacoco file where expected -->
-              <argLine>${jacoco.agent.arg}</argLine>
-          </configuration>
-      </plugin>
-      
-		<!-- Corre los tests de integracion *IT -->
-	  <plugin>
-		<artifactId>maven-failsafe-plugin</artifactId>
-		<version>${version.plugin.failsafe}</version>
-          <executions>
-              <execution>
-                  <goals>
-                      <goal>integration-test</goal>
-                      <goal>verify</goal>
-                  </goals>
-                  <configuration>
-                      <!-- Adds the line argument to dump jacoco file where expected -->
-                      <argLine>${jacoco.agent.arg}</argLine>
-                  </configuration>
-              </execution>
-          </executions>
-	  </plugin>
-
-        <!-- Recopila info de cobertura para los tests -->
-        <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${version.jacoco}</version>
-            <executions>
-                <execution>
-                    <id>prepare-agent</id>
-                    <goals>
-                        <goal>prepare-agent</goal>
-                    </goals>
-                    <configuration>
-                        <destFile>${jacoco.out.path}/${jacoco.out.file}</destFile>
-                        <propertyName>jacoco.agent.arg</propertyName>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-
         <!-- Attachea los fuentes como jar -->
         <plugin>
             <artifactId>maven-source-plugin</artifactId>
@@ -142,8 +66,36 @@ of a fixed location is recommended. -->
                 </execution>
             </executions>
         </plugin>
+        
+        <!-- Descomprime el contenedor ejecutable -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>${version.plugin.dependency}</version>
+            <executions>
+                <execution>
+                    <id>copy-dependency</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>unpack</goal>
+                    </goals>
+                    <configuration>
+                        <artifactItems>
+                            <artifactItem>
+                                <groupId>ar.com.kfgodel</groupId>
+                                <artifactId>executable-container</artifactId>
+                                <version>0.1-SNAPSHOT</version>
+                                <type>zip</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>target/unpacked</outputDirectory>
+                            </artifactItem>
+                        </artifactItems>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 
-        <!-- Los empaqueta en jars -->
+        <!-- 1º Los empaqueta en jars -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${version.plugin.jar}</version>
@@ -166,7 +118,7 @@ of a fixed location is recommended. -->
         </configuration>
       </plugin>
 
-        <!-- Genera un sólo jar con todas las dependencias -->
+        <!-- 2º Genera un sólo jar con todas las dependencias -->
         <plugin>
             <!-- Permite que los archivos individuales de spring sean mergeados y no pisados -->
             <groupId>org.apache.maven.plugins</groupId>
@@ -207,35 +159,7 @@ of a fixed location is recommended. -->
             </executions>
         </plugin>
         
-      <!-- Descomprime el contenedor ejecutable -->
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>${version.plugin.dependency}</version>
-            <executions>
-                <execution>
-                    <id>copy-dependency</id>
-                    <phase>compile</phase>
-                    <goals>
-                        <goal>unpack</goal>
-                    </goals>
-                    <configuration>
-                        <artifactItems>
-                            <artifactItem>
-                                <groupId>ar.com.kfgodel</groupId>
-                                <artifactId>executable-container</artifactId>
-                                <version>0.1-SNAPSHOT</version>
-                                <type>zip</type>
-                                <overWrite>true</overWrite>
-                                <outputDirectory>target/unpacked</outputDirectory>
-                            </artifactItem>
-                        </artifactItems>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-
-        <!-- Empaqueta en un zip -->
+        <!-- 3º Empaqueta el resultado final en un zip -->
         <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <version>${version.plugin.assembly}</version>
@@ -290,31 +214,19 @@ of a fixed location is recommended. -->
   
   <dependencies>
 
-    <!-- Communication point with binary wrapper -->
+    <!-- Communication classes to manage executable host container -->
     <dependency>
         <groupId>org.tanukisoftware</groupId>
         <artifactId>wrapper</artifactId>
-        <version>3.5.19</version>
+        <version>3.5.25</version>
+        <scope>provided</scope>
     </dependency>
 
-      
     <!-- Logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${version.slf4j}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${version.slf4j}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>${version.slf4j}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -327,39 +239,19 @@ of a fixed location is recommended. -->
       <version>${version.logback}</version>
     </dependency>
     
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${version.junit}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- Nice assertions -->
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${version.assertj}</version>
-        <scope>test</scope>
-    </dependency>
-
-    <!-- Spec for testing -->
-      <dependency>
-          <groupId>ar.com.dgarcia</groupId>
-          <artifactId>java-spec</artifactId>
-          <version>${version.javaspec}</version>
-          <scope>test</scope>
-      </dependency>
-
-    <!-- Mock for testing -->
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>${version.mockito}</version>
-        <scope>test</scope>
-    </dependency>
-
   </dependencies>
-  
-  
+
+    <distributionManagement>
+        <repository>
+            <id>kfgodel_mosquito</id>
+            <name>Internal Releases</name>
+            <url>http://kfgodel.info:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>kfgodel_mosquito</id>
+            <name>Internal Snapshots</name>
+            <url>http://kfgodel.info:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

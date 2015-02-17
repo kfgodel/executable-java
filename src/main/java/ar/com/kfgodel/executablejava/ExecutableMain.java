@@ -14,7 +14,7 @@ public class ExecutableMain {
     public static Logger LOG = LoggerFactory.getLogger(ExecutableMain.class);
 
     public static void main(String[] args) throws IOException {
-        LOG.info("Replace this app with your own by replacing the jar in app/executable-app.jar");
+        LOG.info("Example app - Replace this application jar with your own in app/executable-app.jar");
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
