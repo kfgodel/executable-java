@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ar.com.kfgodel</groupId>
   <artifactId>executable-java</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>ExecutableJava</name>
   <description>Example project that uses a binary container to be executable on different platforms</description>
   

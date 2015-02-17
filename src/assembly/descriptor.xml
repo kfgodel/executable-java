@@ -8,7 +8,8 @@
     <formats>
         <format>zip</format>
     </formats>
-
+    
+    <!-- Include the app name as a root folder inside the zip file -->
     <includeBaseDirectory>true</includeBaseDirectory>
 
     <fileSets>
@@ -22,6 +23,7 @@
                 <exclude>app/executable-app.jar</exclude>
             </excludes>
         </fileSet>
+        <!-- Replace the example app with our own -->
         <fileSet>
             <directory>target</directory>
             <outputDirectory>app</outputDirectory>
