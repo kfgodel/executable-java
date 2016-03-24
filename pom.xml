@@ -2,71 +2,43 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ar.com.kfgodel</groupId>
+    <artifactId>java-pom</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
   <groupId>ar.com.kfgodel</groupId>
   <artifactId>executable-java</artifactId>
   <version>0.1</version>
+
   <name>ExecutableJava</name>
   <description>Example project that uses a binary container to be executable on different platforms</description>
-  
-  
+
   <scm>
-	<connection>scm:git:ssh://github.com/kfgodel/executable-java.git</connection>
-	<developerConnection>scm:git:ssh://github.com/kfgodel/executable-java.git</developerConnection>
-	<url>https://github.com/kfgodel/executable-java</url>
+    <connection>scm:git:ssh://github.com/kfgodel/executable-java.git</connection>
+    <developerConnection>scm:git:ssh://github.com/kfgodel/executable-java.git</developerConnection>
+    <url>https://github.com/kfgodel/executable-java</url>
   </scm>
-  
+
+  <repositories>
+    <repository>
+      <id>kfgodel_mosquito</id>
+      <name>Repo Mosquito</name>
+      <url>http://kfgodel.info:8081/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
 
   <properties>
-    <project.java.source>1.8</project.java.source>
-    <project.java.target>1.8</project.java.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
-    <version.plugin.compiler>3.1</version.plugin.compiler>
-    <version.plugin.jar>2.4</version.plugin.jar>
-    <version.plugin.source>2.2.1</version.plugin.source>
     <version.plugin.assembly>2.5.3</version.plugin.assembly>
     <version.plugin.shade>2.3</version.plugin.shade>
     <version.plugin.dependency>2.10</version.plugin.dependency>
-
-    <version.slf4j>1.7.6</version.slf4j>
-    <version.logback>1.1.1</version.logback>
-
   </properties>
 
-  
   <build>
-      
-      
     <plugins>
 	
-		<!-- Genera los binarios -->
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.plugin.compiler}</version>
-        <configuration>
-          <source>${project.java.source}</source>
-          <target>${project.java.target}</target>
-          <debug>true</debug>
-          <!-- This parameter enables parameter name preservation -->
-          <compilerArgument>-parameters</compilerArgument>
-        </configuration>
-      </plugin>
-      
-        <!-- Attachea los fuentes como jar -->
-        <plugin>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>${version.plugin.source}</version>
-            <executions>
-                <execution>
-                    <id>attach-source</id>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>jar-no-fork</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        
         <!-- Descomprime el contenedor ejecutable -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -84,7 +56,7 @@
                             <artifactItem>
                                 <groupId>ar.com.kfgodel</groupId>
                                 <artifactId>executable-container</artifactId>
-                                <version>0.1-SNAPSHOT</version>
+                              <version>0.1</version>
                                 <type>zip</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>target/unpacked</outputDirectory>
@@ -95,30 +67,7 @@
             </executions>
         </plugin>
 
-        <!-- 1º Los empaqueta en jars -->
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${version.plugin.jar}</version>
-        <configuration>
-          <!-- Needed to match container expected jar file -->
-          <finalName>executable-app</finalName>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>ar.com.kfgodel.executablejava.ExecutableMain</mainClass>
-            </manifest>
-              <manifestEntries>
-                <Build-JVM>${java.vm.name} - ${java.vm.vendor}</Build-JVM>
-                <Build-OS>${os.name} - Version: ${os.version}</Build-OS>
-                <Application-GroupId>${project.groupId}</Application-GroupId>
-                <Application-Artifact>${project.artifactId}</Application-Artifact>
-                <Application-Version>${project.version}</Application-Version>
-              </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-
-        <!-- 2º Genera un sólo jar con todas las dependencias -->
+      <!-- Genera un sólo jar con todas las dependencias -->
         <plugin>
             <!-- Permite que los archivos individuales de spring sean mergeados y no pisados -->
             <groupId>org.apache.maven.plugins</groupId>
@@ -158,8 +107,8 @@
                 </execution>
             </executions>
         </plugin>
-        
-        <!-- 3º Empaqueta el resultado final en un zip -->
+
+      <!-- Empaqueta el resultado final en un zip -->
         <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <version>${version.plugin.assembly}</version>
@@ -185,33 +134,6 @@
     </plugins>
   </build>
   
-  <repositories>
-    <repository>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <id>kfgodel_mosquito</id>
-      <name>Repo Mosquito</name>
-      <url>http://kfgodel.info:8081/nexus/content/groups/public/</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <id>kfgodel_mosquito</id>
-      <name>Repo Mosquito</name>
-      <url>http://kfgodel.info:8081/nexus/content/groups/public/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  
   <dependencies>
 
     <!-- Communication classes to manage executable host container -->
@@ -224,34 +146,18 @@
 
     <!-- Logging -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${version.slf4j}</version>
-    </dependency>
-    <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>${version.logback}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${version.logback}</version>
+      <scope>compile</scope>
     </dependency>
     
   </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>kfgodel_mosquito</id>
-            <name>Internal Releases</name>
-            <url>http://kfgodel.info:8081/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>kfgodel_mosquito</id>
-            <name>Internal Snapshots</name>
-            <url>http://kfgodel.info:8081/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
 
 </project>
