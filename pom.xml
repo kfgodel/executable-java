@@ -26,7 +26,7 @@
     <repository>
       <id>kfgodel_mosquito</id>
       <name>Repo Mosquito</name>
-      <url>http://kfgodel.info:8081/nexus/content/groups/public/</url>
+      <url>http://kfgodel.info:8081/nexus/repository/public/</url>
     </repository>
   </repositories>
 
@@ -56,7 +56,7 @@
                             <artifactItem>
                                 <groupId>ar.com.kfgodel</groupId>
                                 <artifactId>executable-container</artifactId>
-                              <version>0.1</version>
+                              <version>0.2-SNAPSHOT</version>
                                 <type>zip</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>target/unpacked</outputDirectory>
