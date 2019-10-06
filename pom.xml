@@ -15,11 +15,12 @@
 
   <name>ExecutableJava</name>
   <description>Example project that uses a binary container to be executable on different platforms</description>
+  <url>https://github.com/kfgodel/executable-java</url>
 
   <scm>
-    <connection>scm:git:ssh://github.com/kfgodel/executable-java.git</connection>
     <developerConnection>scm:git:ssh://github.com/kfgodel/executable-java.git</developerConnection>
-    <url>https://github.com/kfgodel/executable-java</url>
+    <connection>${project.scm.developerConnection}</connection>
+    <url>${project.url}</url>
   </scm>
 
   <repositories>
@@ -31,6 +32,9 @@
   </repositories>
 
   <properties>
+    <!-- Sonar properties to prevent unintentional id changes (Reference: https://docs.sonarqube.org/latest/analysis/analysis-parameters/) -->
+    <sonar.projectKey>ar.com.kfgodel:executable-java</sonar.projectKey>
+
     <version.plugin.assembly>2.5.3</version.plugin.assembly>
     <version.plugin.shade>2.3</version.plugin.shade>
     <version.plugin.dependency>2.10</version.plugin.dependency>
